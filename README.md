@@ -15,5 +15,4 @@ This repository hosts a simple static web page that welcomes visitors, displays 
 2. Open your browser and navigate to [http://localhost:8000/](http://localhost:8000/).
 3. Review the thought of the day automatically loaded from the internet.
 4. Click **Show Current Time** to see the date and time formatted for your locale.
-
 No build steps are required; the page runs entirely in the browser.
