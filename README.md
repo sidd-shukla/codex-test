@@ -13,6 +13,6 @@ This repository hosts a simple static web page that welcomes visitors, displays 
    python -m http.server 8000
    ```
 2. Open your browser and navigate to [http://localhost:8000/](http://localhost:8000/).
-3. Review the thought of the day automatically loaded from the internet.
+3. Review the thought of the day automatically loaded from the internet. The page first tries to fetch a quote from [DummyJSON's quote API](https://dummyjson.com/quotes/random) and, if that is unavailable, from [ZenQuotes](https://zenquotes.io/api/random). When both networks fail, an on-device quote is shown so the page still surfaces an uplifting thought.
 4. Click **Show Current Time** to see the date and time formatted for your locale.
 No build steps are required; the page runs entirely in the browser.
