@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #f5f7fa 0%, #c3cfe2 100%);
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    main {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 16px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+      padding: 48px 56px;
+      text-align: center;
+      max-width: 520px;
+      width: calc(100% - 32px);
+      display: grid;
+      gap: 24px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: #2d3748;
+    }
+
+    blockquote {
+      margin: 0;
+      padding: 0;
+      font-size: 1.25rem;
+      color: #1a202c;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    blockquote::before {
+      content: '“';
+      font-size: 4rem;
+      line-height: 0.5;
+      color: rgba(37, 99, 235, 0.25);
+      position: absolute;
+      top: -12px;
+      left: -12px;
+    }
+
+    cite {
+      display: block;
+      margin-top: 12px;
+      font-size: 1rem;
+      color: #4a5568;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      background-color: #2563eb;
+      color: #fff;
+      padding: 14px 32px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      justify-self: center;
+    }
+
+    button:hover,
+    button:focus {
+      outline: none;
+      background-color: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.4);
+    }
+
+    #time-display {
+      font-size: 1.1rem;
+      color: #1a202c;
+      min-height: 1.5em;
+    }
+
+    #quote-status {
+      font-size: 0.95rem;
+      color: #4a5568;
+      min-height: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Welcome</h1>
+    <section aria-live="polite" aria-busy="true">
+      <blockquote id="quote-text">Fetching today's thought…</blockquote>
+      <cite id="quote-author"></cite>
+      <div id="quote-status"></div>
+    </section>
+    <button id="show-time" type="button">
+      Show Current Time
+    </button>
+    <div id="time-display" role="status" aria-live="polite"></div>
+  </main>
+  <script>
+    const showTimeButton = document.getElementById('show-time');
+    const timeDisplay = document.getElementById('time-display');
+    const quoteText = document.getElementById('quote-text');
+    const quoteAuthor = document.getElementById('quote-author');
+    const quoteStatus = document.getElementById('quote-status');
+    const quoteSection = quoteText.parentElement;
+
+    function formatCurrentTime() {
+      const now = new Date();
+      const formatter = new Intl.DateTimeFormat(undefined, {
+        dateStyle: 'full',
+        timeStyle: 'medium'
+      });
+      return formatter.format(now);
+    }
+
+    async function fetchThoughtOfTheDay() {
+      try {
+        const response = await fetch('https://api.quotable.io/random?tags=inspirational|wisdom', {
+          cache: 'no-store'
+        });
+
+        if (!response.ok) {
+          throw new Error(`Unexpected response: ${response.status}`);
+        }
+
+        const data = await response.json();
+        quoteText.textContent = data.content;
+        quoteAuthor.textContent = data.author ? `— ${data.author}` : '';
+        quoteStatus.textContent = '';
+      } catch (error) {
+        quoteText.textContent = 'Take a deep breath and craft your own thought for today.';
+        quoteAuthor.textContent = '';
+        quoteStatus.textContent = 'We could not fetch a quote from the internet right now. Please check your connection and refresh the page to try again.';
+      } finally {
+        quoteSection.setAttribute('aria-busy', 'false');
+      }
+    }
+
+    showTimeButton.addEventListener('click', () => {
+      timeDisplay.textContent = formatCurrentTime();
+    });
+
+    fetchThoughtOfTheDay();
+  </script>
+</body>
+</html>
