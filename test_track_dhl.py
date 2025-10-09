@@ -28,8 +28,12 @@ def _assert_tracking_request(call_args, expected_tracking_number: str):
     (req,), _ = call_args
     assert req.full_url.startswith(API_URL)
     assert f"trackingNumber={expected_tracking_number}" in req.full_url
+    assert "service=express" in req.full_url
     headers = {key.lower(): value for key, value in req.header_items()}
     assert headers.get("dhl-api-key") == "test-key"
+    assert headers.get("accept") == "application/json"
+    assert headers.get("accept-language") == "en-US"
+    assert headers.get("user-agent") == "dhl-tracker-cli/1.0"
 
 
 def test_fetch_shipment_status_success():

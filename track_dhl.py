@@ -33,11 +33,19 @@ def fetch_shipment_status(tracking_number: str, api_key: str) -> str:
     if not api_key:
         raise ValueError("DHL API key must not be empty.")
 
-    query = parse.urlencode({"trackingNumber": tracking_number})
+    query = parse.urlencode(
+        {
+            "trackingNumber": tracking_number,
+            "service": "express",
+        }
+    )
     http_request = request.Request(
         url=f"{API_URL}?{query}",
         headers={
             "DHL-API-Key": api_key,
+            "Accept": "application/json",
+            "Accept-Language": "en-US",
+            "User-Agent": "dhl-tracker-cli/1.0",
         },
         method="GET",
     )
@@ -92,9 +100,11 @@ def main() -> int:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
     except error.HTTPError as exc:
+        details = exc.read().decode("utf-8", errors="replace") if exc.fp else ""
+        detail_msg = f" ({details.strip()})" if details.strip() else ""
         print(
             "Failed to retrieve shipment status from DHL: "
-            f"{exc.code} {exc.reason}",
+            f"{exc.code} {exc.reason}{detail_msg}",
             file=sys.stderr,
         )
         return 1
