@@ -11,15 +11,16 @@ from urllib import error, parse, request
 API_URL = "https://api-eu.dhl.com/track/shipments"
 
 
-def fetch_shipment_status(tracking_number: str, api_key: str) -> str:
-    """Retrieve the shipment status description for a DHL tracking number.
+def fetch_shipment_status(tracking_number: str, api_key: str) -> tuple[str, Dict[str, Any]]:
+    """Retrieve the shipment status and details for a DHL tracking number.
 
     Args:
         tracking_number: The DHL tracking number to look up.
         api_key: DHL API key used for authentication.
 
     Returns:
-        A human readable shipment status description.
+        A tuple containing the human readable shipment status description and the
+        full shipment payload returned by DHL.
 
     Raises:
         ValueError: If the tracking number is empty or the response is missing
@@ -58,7 +59,10 @@ def fetch_shipment_status(tracking_number: str, api_key: str) -> str:
         raise ValueError("No shipment information returned for the provided tracking number.")
 
     shipment = shipments[0]
-    status_info = shipment.get("status") if isinstance(shipment, dict) else None
+    if not isinstance(shipment, dict):
+        raise ValueError("Shipment data is not in the expected format.")
+
+    status_info = shipment.get("status")
     if not status_info:
         raise ValueError("Shipment status information is unavailable.")
 
@@ -70,7 +74,7 @@ def fetch_shipment_status(tracking_number: str, api_key: str) -> str:
     if not description:
         raise ValueError("Shipment status description is missing from the API response.")
 
-    return str(description)
+    return str(description), shipment
 
 
 def main() -> int:
@@ -95,7 +99,7 @@ def main() -> int:
         return 1
 
     try:
-        status = fetch_shipment_status(tracking_number, api_key)
+        status, details = fetch_shipment_status(tracking_number, api_key)
     except ValueError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
@@ -113,6 +117,8 @@ def main() -> int:
         return 1
 
     print(f"Shipment status: {status}")
+    print("Full shipment details:")
+    print(json.dumps(details, indent=2, sort_keys=True))
     return 0
 
 

@@ -42,9 +42,10 @@ def test_fetch_shipment_status_success():
     )
 
     with mock.patch("track_dhl.request.urlopen", return_value=response) as mocked_urlopen:
-        status = fetch_shipment_status("1234567890", "test-key")
+        status, details = fetch_shipment_status("1234567890", "test-key")
 
     assert status == "Delivered"
+    assert details == {"status": {"description": "Delivered"}}
     _assert_tracking_request(mocked_urlopen.call_args, "1234567890")
 
 

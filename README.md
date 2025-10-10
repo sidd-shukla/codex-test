@@ -19,7 +19,7 @@ No build steps are required; the page runs entirely in the browser.
 
 ## DHL shipment tracking helper
 
-- `track_dhl.py` – Prompts for a DHL tracking number, calls the public tracking API, and prints the latest shipment status description.
+- `track_dhl.py` – Prompts for a DHL tracking number, calls the public tracking API, and prints the latest shipment status description alongside the full shipment payload returned by DHL.
 - `test_track_dhl.py` – Unit tests that exercise the core tracking logic without calling the external API.
 
 ### Running the tracker
@@ -40,7 +40,7 @@ No build steps are required; the page runs entirely in the browser.
    ```bash
    python track_dhl.py
    ```
-   The script sends the tracking number to DHL using your API key. If a shipment is found, the latest status description is written to standard output. Any API or network issues are reported on standard error so you can troubleshoot quickly.
+   The script sends the tracking number to DHL using your API key. If a shipment is found, the latest status description is written to standard output along with a JSON-formatted copy of the entire shipment response so you can review all available fields. Any API or network issues are reported on standard error so you can troubleshoot quickly.
 
 ### Running the tests
 
